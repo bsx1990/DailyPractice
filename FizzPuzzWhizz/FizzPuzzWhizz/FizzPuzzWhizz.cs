@@ -19,7 +19,14 @@ namespace FizzPuzzWhizz
 
         public string Translate(int input)
         {
-            var containsThreeRule = new Rule(new ContainsCondition(3),FizzDisplay);
+            var rule = GetRule();
+            var (isPassed, result) = input.ValidatedBy(rule);
+            return isPassed ? result : input.ToString();
+        }
+
+        private static Rule GetRule()
+        {
+            var containsThreeRule = new Rule(new ContainsCondition(3), FizzDisplay);
             var devidedByThreeRule = new Rule(new DevidedCondition(3), FizzDisplay);
             var devidedByFiveRule = new Rule(new DevidedCondition(5), BuzzDisplay);
             var devidedBySevenRule = new Rule(new DevidedCondition(7), WhizzDisplay);
@@ -29,16 +36,14 @@ namespace FizzPuzzWhizz
             var devidedByThreeAndSevenRule = new AndRule(devidedByThreeRule, devidedBySevenRule);
             var devidedByFiveAndSevenRule = new AndRule(devidedByFiveRule, devidedBySevenRule);
 
-            var rule = new OrRule(containsThreeRule,
-                                  devidecByThreeAndFiveAndSevenRule,
-                                  devidedByThreeAndFiveRule,
-                                  devidedByThreeAndSevenRule,
-                                  devidedByFiveAndSevenRule,
-                                  devidedByThreeRule,
-                                  devidedByFiveRule,
-                                  devidedBySevenRule);
-            var (isPassed, result) = input.ValidatedBy(rule);
-            return isPassed ? result : input.ToString();
+            return new OrRule(containsThreeRule,
+                              devidecByThreeAndFiveAndSevenRule,
+                              devidedByThreeAndFiveRule,
+                              devidedByThreeAndSevenRule,
+                              devidedByFiveAndSevenRule,
+                              devidedByThreeRule,
+                              devidedByFiveRule,
+                              devidedBySevenRule);
         }
     }
 
