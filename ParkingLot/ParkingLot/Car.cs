@@ -1,6 +1,11 @@
 ﻿namespace ParkingLot
 {
-    public class Car
+    public interface ICar
+    {
+        string LicensePlate { get; set; }
+    }
+
+    public class Car : ICar
     {
         public Car(string licensePlate)
         {

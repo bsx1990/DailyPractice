@@ -46,12 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Car.cs" />
-    <Compile Include="ParkingBoy.cs" />
     <Compile Include="Exceptions\ParkingException.cs" />
+    <Compile Include="Exceptions\PickUpException.cs" />
+    <Compile Include="ParkingBoy.cs" />
     <Compile Include="ParkingLot.cs" />
     <Compile Include="ParkingSpace.cs" />
+    <Compile Include="ParkingSpaceException.cs" />
     <Compile Include="ParkingTicket.cs" />
-    <Compile Include="Exceptions\PickUpException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

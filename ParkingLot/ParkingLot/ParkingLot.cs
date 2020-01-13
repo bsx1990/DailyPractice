@@ -5,28 +5,45 @@ namespace ParkingLot
 {
     public class ParkingLot
     {
-        public ParkingLot(int totalParkingSpace)
+        private readonly IList<ParkingSpace> _parkedSpaces;
+        private readonly IList<ParkingSpace> _emptyParkingSpaces;
+
+        public int TotalSpace => _emptyParkingSpaces.Count + _parkedSpaces.Count;
+
+        public ParkingLot(int totalSpace)
         {
-            TotalParkingSpaceCount = totalParkingSpace;
-            InitParkingSpaces();
+            _emptyParkingSpaces = CreateSpaces(totalSpace);
+            _parkedSpaces = new List<ParkingSpace>();
         }
 
-        private void InitParkingSpaces()
+        private static IList<ParkingSpace> CreateSpaces(int totalSpace)
         {
-            ParkingSpaces = new List<ParkingSpace>(TotalParkingSpaceCount);
-            for (var index = 0; index < TotalParkingSpaceCount; index++)
+            var result = new List<ParkingSpace>();
+            for (var i = 0; i < totalSpace; i++)
             {
-                ParkingSpaces.Add(new ParkingSpace(index.ToString()));
+                result.Add(new ParkingSpace($"P{i+1}"));
             }
+
+            return result;
         }
 
-        public int TotalParkingSpaceCount { get; set; }
-        public IList<ParkingSpace> ParkingSpaces { get; set; }
-        public int EmptyParkingSpaceCount => ParkingSpaces.Count(space => space.IsEmpty());
-
-        public bool HasEmptyParkingSpace()
+        public ParkingSpace GetEmptySpace()
         {
-            return EmptyParkingSpaceCount > 0;
+            if (_emptyParkingSpaces.All(space=>!space.IsEmpty))
+            {
+                throw new ParkingSpaceException("No empty parking space");
+            }
+
+            var result = _emptyParkingSpaces.First(space => space.IsEmpty);
+            _emptyParkingSpaces.Remove(result);
+            _parkedSpaces.Add(result);
+            return result;
+        }
+
+        public ParkingSpace GetParkedSpace(string id)
+        {
+            var parkedSpace = _parkedSpaces.FirstOrDefault(space => space.Id == id);
+            return parkedSpace ?? throw new ParkingSpaceException($"Can not found parked parking space with id:{id}");
         }
     }
 }
