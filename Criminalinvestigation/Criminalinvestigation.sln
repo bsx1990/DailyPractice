@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Criminalinvestigation", "Criminalinvestigation\Criminalinvestigation.csproj", "{513FC0B8-7907-466A-B12F-042D3234BCAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{7EAD269D-F131-4890-B86A-624A9FE2DE13}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{513FC0B8-7907-466A-B12F-042D3234BCAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{513FC0B8-7907-466A-B12F-042D3234BCAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{513FC0B8-7907-466A-B12F-042D3234BCAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{513FC0B8-7907-466A-B12F-042D3234BCAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EAD269D-F131-4890-B86A-624A9FE2DE13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EAD269D-F131-4890-B86A-624A9FE2DE13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EAD269D-F131-4890-B86A-624A9FE2DE13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EAD269D-F131-4890-B86A-624A9FE2DE13}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A7CF148-3EA6-4BD7-B687-063D114ED2C1}
+	EndGlobalSection
+EndGlobal
