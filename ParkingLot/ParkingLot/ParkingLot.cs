@@ -3,7 +3,15 @@ using System.Linq;
 
 namespace ParkingLot
 {
-    public class ParkingLot
+    public interface IParkingLot
+    {
+        int TotalSpace { get; }
+        ParkingSpace GetEmptySpace();
+        ParkingSpace GetParkedSpace(string id);
+        bool HasEmptySpaces();
+    }
+
+    public class ParkingLot : IParkingLot
     {
         private readonly IList<ParkingSpace> _parkedSpaces;
         private readonly IList<ParkingSpace> _emptyParkingSpaces;
@@ -44,6 +52,11 @@ namespace ParkingLot
         {
             var parkedSpace = _parkedSpaces.FirstOrDefault(space => space.Id == id);
             return parkedSpace ?? throw new ParkingSpaceException($"Can not found parked parking space with id:{id}");
+        }
+
+        public bool HasEmptySpaces()
+        {
+            return _emptyParkingSpaces.Any(space => space.IsEmpty);
         }
     }
 }

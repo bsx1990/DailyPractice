@@ -49,10 +49,14 @@
     <Compile Include="Exceptions\ParkingException.cs" />
     <Compile Include="Exceptions\PickUpException.cs" />
     <Compile Include="ParkingBoy.cs" />
+    <Compile Include="ParkingClock.cs" />
+    <Compile Include="ParkingFeeCalculator.cs" />
     <Compile Include="ParkingLot.cs" />
     <Compile Include="ParkingSpace.cs" />
     <Compile Include="ParkingSpaceException.cs" />
+    <Compile Include="ParkingSystem.cs" />
     <Compile Include="ParkingTicket.cs" />
+    <Compile Include="PickupResponse.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

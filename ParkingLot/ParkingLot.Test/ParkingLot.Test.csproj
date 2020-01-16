@@ -51,6 +51,8 @@
     <Compile Include="ParkingBoyTest.cs" />
     <Compile Include="ParkingLotTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ParkingSystemTest.cs" />
+    <Compile Include="ParkingFeeCalculatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
