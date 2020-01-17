@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testament", "Testament\Testament.csproj", "{52AC6BA4-0B54-4405-9F99-24586620E213}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{52AC6BA4-0B54-4405-9F99-24586620E213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52AC6BA4-0B54-4405-9F99-24586620E213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52AC6BA4-0B54-4405-9F99-24586620E213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52AC6BA4-0B54-4405-9F99-24586620E213}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C27E7503-EF43-4B27-969E-6AE52521D3EA}
+	EndGlobalSection
+EndGlobal
