@@ -17,7 +17,7 @@ namespace ParkingLot.Test
             var parkingSystem = new ParkingSystem
                                 {
                                     ParkingLots = new List<IParkingLot> { parkingLot },
-                                    ParkingBoys = new List<ParkingBoy> { parkingBoy }
+                                    ParkingBoys = new List<IParkingBoy> { parkingBoy }
                                 };
             var parkingSpace = parkingSystem.GetEmptySpace();
 
@@ -36,7 +36,7 @@ namespace ParkingLot.Test
             var parkingSystem = new ParkingSystem
                                 {
                                     ParkingLots = new List<IParkingLot> { parkingLot },
-                                    ParkingBoys = new List<ParkingBoy>()
+                                    ParkingBoys = new List<IParkingBoy>()
                                 };
             var parkingSpace = parkingSystem.GetEmptySpace();
 
@@ -52,7 +52,7 @@ namespace ParkingLot.Test
             var parkingSystem = new ParkingSystem
                                 {
                                     ParkingLots = new List<IParkingLot> { parkingLot },
-                                    ParkingBoys = new List<ParkingBoy> { parkingBoy }
+                                    ParkingBoys = new List<IParkingBoy> { parkingBoy }
                                 };
             var parkingSpace = parkingSystem.GetEmptySpace();
             parkingSpace.ParkedWithCar(car);
@@ -78,7 +78,7 @@ namespace ParkingLot.Test
             var parkingSystem = new ParkingSystem
                                 {
                                     ParkingLots = new List<IParkingLot> { parkingLot },
-                                    ParkingBoys = new List<ParkingBoy> { parkingBoy },
+                                    ParkingBoys = new List<IParkingBoy> { parkingBoy },
                                     ParkingClock = clock
                                 };
             var parkingSpace = parkingSystem.GetEmptySpace();

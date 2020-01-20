@@ -3,9 +3,15 @@ using System.Timers;
 
 namespace ParkingLot
 {
-    public class ParkingClock
+    public interface IParkingClock
     {
-        public DateTime CurrentTime { get; set; }
+        void SetTime(DateTime time);
+        DateTime GetTime();
+    }
+
+    public class ParkingClock : IParkingClock
+    {
+        private DateTime CurrentTime { get; set; }
 
         public ParkingClock(DateTime time)
         {

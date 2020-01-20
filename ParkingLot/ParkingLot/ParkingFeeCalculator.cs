@@ -2,10 +2,15 @@
 
 namespace ParkingLot
 {
-    public class ParkingFeeCalculator
+    public interface IParkingFeeCalculator
+    {
+        double CalcFee(DateTime parkingTime, DateTime pickUpTime);
+    }
+
+    public class ParkingFeeCalculator : IParkingFeeCalculator
     {
         private const float MoneyPerHour = 5;
-        public static double CalcFee(DateTime parkingTime, DateTime pickUpTime)
+        public double CalcFee(DateTime parkingTime, DateTime pickUpTime)
         {
             var timeSpan = pickUpTime.Subtract(parkingTime);
             var hours = timeSpan.Hours;

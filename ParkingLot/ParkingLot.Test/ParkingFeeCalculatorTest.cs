@@ -12,8 +12,9 @@ namespace ParkingLot.Test
             var now = DateTime.Now;
             var parkingTime = new DateTime(now.Year, now.Month, now.Day, 14, 0, 0);
             var pickUpTime = new DateTime(now.Year, now.Month, now.Day, 16, 0, 0);
+            var calculator = new ParkingFeeCalculator();
 
-            var actual = ParkingFeeCalculator.CalcFee(parkingTime, pickUpTime);
+            var actual = calculator.CalcFee(parkingTime, pickUpTime);
 
             Assert.AreEqual(10,actual);
         }
@@ -24,8 +25,9 @@ namespace ParkingLot.Test
             var now = DateTime.Now;
             var parkingTime = new DateTime(now.Year, now.Month, now.Day, 14, 10, 0);
             var pickUpTime = new DateTime(now.Year, now.Month, now.Day, 16, 0, 0);
+            var calculator = new ParkingFeeCalculator();
 
-            var actual = ParkingFeeCalculator.CalcFee(parkingTime, pickUpTime);
+            var actual = calculator.CalcFee(parkingTime, pickUpTime);
 
             Assert.AreEqual(10,actual);
         }
@@ -36,8 +38,9 @@ namespace ParkingLot.Test
             var now = DateTime.Now;
             var parkingTime = new DateTime(now.Year, now.Month, now.Day, 14, 0, 0);
             var pickUpTime = new DateTime(now.Year, now.Month, now.Day, 16, 10, 0);
+            var calculator = new ParkingFeeCalculator();
 
-            var actual = ParkingFeeCalculator.CalcFee(parkingTime, pickUpTime);
+            var actual = calculator.CalcFee(parkingTime, pickUpTime);
 
             Assert.AreEqual(15,actual);
         }

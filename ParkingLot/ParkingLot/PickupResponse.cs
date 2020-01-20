@@ -1,8 +1,14 @@
 ﻿namespace ParkingLot
 {
-    public class PickupResponse
+    public interface IPickupResponse
     {
-        public Car Car { get; set; }
+        ICar Car { get; set; }
+        double Fee { get; set; }
+    }
+
+    public class PickupResponse : IPickupResponse
+    {
+        public ICar Car { get; set; }
         public double Fee { get; set; }
     }
 }

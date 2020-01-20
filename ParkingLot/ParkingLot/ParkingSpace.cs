@@ -1,11 +1,19 @@
 ﻿namespace ParkingLot
 {
-    public class ParkingSpace
+    public interface IParkingSpace
+    {
+        string Id { get; }
+        bool IsEmpty { get; }
+        void ParkedWithCar(ICar car);
+        ICar PickUpCar();
+    }
+
+    public class ParkingSpace : IParkingSpace
     {
         private ParkingSpaceStatus _status;
 
         public string Id { get; }
-        public Car Car { get; set; }
+        private ICar Car { get; set; }
         public bool IsEmpty => _status == ParkingSpaceStatus.Empty;
 
         public ParkingSpace(string id)
@@ -14,13 +22,13 @@
             _status = ParkingSpaceStatus.Empty;
         }
 
-        public void ParkedWithCar(Car car)
+        public void ParkedWithCar(ICar car)
         {
             MarkAsParked();
             Car = car;
         }
 
-        public Car PickUpCar()
+        public ICar PickUpCar()
         {
             MarkAsEmpty();
             var result = Car;
