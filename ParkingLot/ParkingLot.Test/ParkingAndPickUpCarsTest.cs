@@ -22,20 +22,17 @@ namespace ParkingLot.Test
                                     ParkingBoys = new List<IParkingBoy> { parkingBoy },
                                     ParkingClock = clock
             };
-            var parkingSpace = parkingSystem.GetEmptySpace();
 
-            var parkingTicket = parkingSystem.Parking(car, parkingSpace);
+            var parkingTicket = parkingSystem.Parking(car);
             Assert.AreEqual(car.LicensePlate, parkingTicket.LicensePlate);
-            Assert.AreEqual(parkingSpace.Id, parkingTicket.ParkingSpaceId);
-            Assert.IsFalse(parkingSpace.IsEmpty);
+            Assert.AreEqual(parkingTime, parkingTicket.ParkingTime);
 
             clock.SetTime(new DateTime(now.Year, now.Month, now.Day, 16, 0, 0));
 
             var actual = parkingSystem.PickUp(parkingTicket);
 
             Assert.AreEqual(car, actual.Car);
-            Assert.AreEqual(10, actual.Fee);
-            Assert.IsTrue(parkingSpace.IsEmpty);
+            Assert.AreEqual(12, actual.Fee);
         }
     }
 }

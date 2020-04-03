@@ -50,7 +50,9 @@
     <Compile Include="Exceptions\PickUpException.cs" />
     <Compile Include="ParkingBoy.cs" />
     <Compile Include="ParkingClock.cs" />
-    <Compile Include="ParkingFeeCalculator.cs" />
+    <Compile Include="ParkingFeeCalculator\LinearParkingFeeCalculator.cs" />
+    <Compile Include="ParkingFeeCalculator\MonthlyParkingFeeCalculator.cs" />
+    <Compile Include="ParkingFeeCalculator\TimeSharingParkingFeeCalculator.cs" />
     <Compile Include="ParkingLot.cs" />
     <Compile Include="ParkingSpace.cs" />
     <Compile Include="ParkingSpaceException.cs" />

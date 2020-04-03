@@ -30,6 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,6 +39,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
@@ -49,10 +51,12 @@
   <ItemGroup>
     <Compile Include="ParkingAndPickUpCarsTest.cs" />
     <Compile Include="ParkingBoyTest.cs" />
+    <Compile Include="ParkingFeeCalculatorTest\MonthlyParkingFeeCalculatorTest.cs" />
     <Compile Include="ParkingLotTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParkingSystemTest.cs" />
-    <Compile Include="ParkingFeeCalculatorTest.cs" />
+    <Compile Include="ParkingFeeCalculatorTest\LinearParkingFeeCalculatorTest.cs" />
+    <Compile Include="ParkingFeeCalculatorTest\TimeSharingParkingFeeCalculatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

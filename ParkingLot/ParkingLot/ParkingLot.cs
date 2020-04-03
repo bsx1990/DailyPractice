@@ -1,14 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ParkingLot
 {
     public interface IParkingLot
     {
+        string Id { get; }
         int TotalSpace { get; }
         ParkingSpace GetEmptySpace();
         ParkingSpace GetParkedSpace(string id);
         bool HasEmptySpaces();
+        IList<ParkingSpace> GetParkedSpaces();
     }
 
     public class ParkingLot : IParkingLot
@@ -16,20 +19,22 @@ namespace ParkingLot
         private readonly IList<ParkingSpace> _parkedSpaces;
         private readonly IList<ParkingSpace> _emptyParkingSpaces;
 
+        public string Id { get; }
         public int TotalSpace => _emptyParkingSpaces.Count + _parkedSpaces.Count;
 
         public ParkingLot(int totalSpace)
         {
+            Id = new Guid().ToString();
             _emptyParkingSpaces = CreateSpaces(totalSpace);
             _parkedSpaces = new List<ParkingSpace>();
         }
 
-        private static IList<ParkingSpace> CreateSpaces(int totalSpace)
+        private IList<ParkingSpace> CreateSpaces(int totalSpace)
         {
             var result = new List<ParkingSpace>();
             for (var i = 0; i < totalSpace; i++)
             {
-                result.Add(new ParkingSpace($"P{i+1}"));
+                result.Add(new ParkingSpace($"P{i + 1}") {ParkingLotId = Id});
             }
 
             return result;
@@ -57,6 +62,11 @@ namespace ParkingLot
         public bool HasEmptySpaces()
         {
             return _emptyParkingSpaces.Any(space => space.IsEmpty);
+        }
+
+        public IList<ParkingSpace> GetParkedSpaces()
+        {
+            return _parkedSpaces;
         }
     }
 }

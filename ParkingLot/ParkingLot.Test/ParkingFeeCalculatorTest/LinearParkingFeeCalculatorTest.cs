@@ -1,10 +1,11 @@
 ﻿using System;
 using NUnit.Framework;
+using ParkingLot.ParkingFeeCalculator;
 
-namespace ParkingLot.Test
+namespace ParkingLot.Test.ParkingFeeCalculatorTest
 {
     [TestFixture]
-    public class ParkingFeeCalculatorTest
+    public class LinearParkingFeeCalculatorTest
     {
         [Test]
         public void ShouldBe10_WhenParkingFrom1400To1600()
@@ -12,7 +13,7 @@ namespace ParkingLot.Test
             var now = DateTime.Now;
             var parkingTime = new DateTime(now.Year, now.Month, now.Day, 14, 0, 0);
             var pickUpTime = new DateTime(now.Year, now.Month, now.Day, 16, 0, 0);
-            var calculator = new ParkingFeeCalculator();
+            var calculator = new LinearParkingFeeCalculator();
 
             var actual = calculator.CalcFee(parkingTime, pickUpTime);
 
@@ -25,7 +26,7 @@ namespace ParkingLot.Test
             var now = DateTime.Now;
             var parkingTime = new DateTime(now.Year, now.Month, now.Day, 14, 10, 0);
             var pickUpTime = new DateTime(now.Year, now.Month, now.Day, 16, 0, 0);
-            var calculator = new ParkingFeeCalculator();
+            var calculator = new LinearParkingFeeCalculator();
 
             var actual = calculator.CalcFee(parkingTime, pickUpTime);
 
@@ -38,7 +39,7 @@ namespace ParkingLot.Test
             var now = DateTime.Now;
             var parkingTime = new DateTime(now.Year, now.Month, now.Day, 14, 0, 0);
             var pickUpTime = new DateTime(now.Year, now.Month, now.Day, 16, 10, 0);
-            var calculator = new ParkingFeeCalculator();
+            var calculator = new LinearParkingFeeCalculator();
 
             var actual = calculator.CalcFee(parkingTime, pickUpTime);
 

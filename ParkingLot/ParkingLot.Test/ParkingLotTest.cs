@@ -32,7 +32,16 @@ namespace ParkingLot.Test
         public void ShoudGetException_WhenNoValidSpaces()
         {
             var parkingLot = new ParkingLot(0);
-            Assert.Throws<ParkingSpaceException>(()=> { parkingLot.GetEmptySpace(); });
+            Assert.Throws<ParkingSpaceException>(() => { parkingLot.GetEmptySpace(); });
+        }
+
+        [Test]
+        public void ShoudGetEmpty_WhenNoParkingCars()
+        {
+            var parkingLot = new ParkingLot(10);
+            var parkedLicensePlates = parkingLot.GetParkedSpaces();
+
+            Assert.AreEqual(0,parkedLicensePlates.Count);
         }
     }
 }
