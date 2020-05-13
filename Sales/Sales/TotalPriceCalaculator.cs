@@ -6,9 +6,10 @@ namespace Sales
 {
     public class TotalPriceCalaculator
     {
-        public static double Calc(List<Product> shoppingList, Func<Product,double> strategy)
+        public static double Calc(List<Product> shoppingList, Func<Product, double> productStrategy, Func<List<Product>, double, double> listStrategy)
         {
-            return shoppingList.Sum(strategy);
+            var result = shoppingList.Sum(productStrategy);
+            return listStrategy(shoppingList, result);
         }
     }
 }

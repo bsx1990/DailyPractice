@@ -2,9 +2,10 @@
 {
     public class Product
     {
-        public string Name { get; }
-        public ProductCategory Category { get; }
-        public double Price { get; }
+        public string Name { get; set; }
+        public ProductCategory Category { get; set; }
+        public double Price { get; set; }
+
         public Product(string name, ProductCategory category, double price)
         {
             Name = name;
