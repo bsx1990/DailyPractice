@@ -4,6 +4,7 @@
     {
         Drink,
         Meat,
-        Electronics
+        Electronics,
+        WineAndChicken
     }
 }

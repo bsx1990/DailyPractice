@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace Sales
 {
-    public class TotalPriceCalaculator
+    public static class TotalPriceCalaculator
     {
-        public static double Calc(List<Product> shoppingList, Func<Product, double> productStrategy, Func<List<Product>, double, double> listStrategy)
-        {
-            var result = shoppingList.Sum(productStrategy);
-            return listStrategy(shoppingList, result);
-        }
+        public static Bill CreateBill(List<Product> myShoppingList) => new Bill(myShoppingList);
+        public static Bill CreateBill(List<BillItem> billItems) => new Bill(billItems);
     }
 }
