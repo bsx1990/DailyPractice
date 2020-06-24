@@ -11,8 +11,8 @@ namespace Sales.Test
             bill =>
             {
                 var shoppingList = bill.ShoppingList;
-                static bool IsWine(BillItem item) => item.Name == "wine";
-                static bool IsChicken(BillItem item) => item.Name == "chicken";
+                static bool IsWine(BillItem item) => item.Name == ProductName.Wine;
+                static bool IsChicken(BillItem item) => item.Name == ProductName.Chicken;
                 if (!shoppingList.Any(IsWine) || !shoppingList.Any(IsChicken))
                 {
                     return bill;
@@ -27,7 +27,7 @@ namespace Sales.Test
                 var minCount = Math.Min(wineCount, chickenCount);
                 combinedList.Add(new BillItem
                                  {
-                                     Name = "wineAndChicken",
+                                     Name = ProductName.WineAndChicken,
                                      Category = ProductCategory.WineAndChicken,
                                      Price = 23,
                                      Quantity = minCount
@@ -53,7 +53,7 @@ namespace Sales.Test
             bill =>
             {
                 var shoppingList = bill.ShoppingList;
-                static bool IsWineAndChickenPackage(BillItem item) => item.Name == "wineAndChicken";
+                static bool IsWineAndChickenPackage(BillItem item) => item.Name == ProductName.WineAndChicken;
                 var packageCount = shoppingList.First(IsWineAndChickenPackage).Quantity;
                 if (packageCount < 2)
                 {
@@ -65,7 +65,7 @@ namespace Sales.Test
                                    .ToList();
                 combinedList.Add(new BillItem
                                  {
-                                     Name = "secondHalfPriceForWineAndChicken",
+                                     Name = ProductName.SecondHalfPriceForWineAndChicken,
                                      Category = ProductCategory.WineAndChicken,
                                      Price = 23 * 1.5,
                                      Quantity = packageCount / 2
@@ -97,7 +97,7 @@ namespace Sales.Test
                 var meatTotalAmount = bill.ShoppingList
                                           .Where(item =>
                                                      item.Category == ProductCategory.Meat &&
-                                                     item.Name != "pork")
+                                                     item.Name != ProductName.Pork)
                                           .Sum(item => item.Price * item.Quantity);
                 var meatDiscount = meatTotalAmount >= 60
                     ? 8
@@ -125,16 +125,16 @@ namespace Sales.Test
         {
             var myShoppingList = new List<Product>
                                  {
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("light", ProductCategory.Electronics, 100),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Light, ProductCategory.Electronics, 100),
                                  };
             var actual = TotalPriceCalaculator
                          .CreateBill(myShoppingList)
@@ -151,15 +151,15 @@ namespace Sales.Test
         {
             var myShoppingList = new List<Product>
                                  {
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("light", ProductCategory.Electronics, 100),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Light, ProductCategory.Electronics, 100),
                                  };
             var actual = TotalPriceCalaculator
                          .CreateBill(myShoppingList)
@@ -176,20 +176,20 @@ namespace Sales.Test
         {
             var myShoppingList = new List<Product>
                                  {
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("light", ProductCategory.Electronics, 100),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Light, ProductCategory.Electronics, 100),
                                  };
             var actual = TotalPriceCalaculator
                          .CreateBill(myShoppingList)
@@ -206,18 +206,18 @@ namespace Sales.Test
         {
             var myShoppingList = new List<Product>
                                  {
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("light", ProductCategory.Electronics, 100),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Light, ProductCategory.Electronics, 100),
                                  };
             var actual = TotalPriceCalaculator
                          .CreateBill(myShoppingList)
@@ -234,11 +234,11 @@ namespace Sales.Test
         {
             var myShoppingList = new List<BillItem>
                                  {
-                                     new BillItem{ Name = "wine", Category = ProductCategory.Drink, Price = 15, Quantity = 3 },
-                                     new BillItem{ Name = "chicken", Category = ProductCategory.Meat, Price = 10, Quantity = 2 },
-                                     new BillItem{ Name = "cola", Category = ProductCategory.Drink, Price = 5, Quantity = 2 },
-                                     new BillItem{ Name = "pork", Category = ProductCategory.Meat, Price = 25, Quantity = 2 },
-                                     new BillItem{ Name = "light", Category = ProductCategory.Electronics, Price = 100, Quantity = 1 },
+                                     new BillItem{ Name = ProductName.Wine, Category = ProductCategory.Drink, Price = 15, Quantity = 3 },
+                                     new BillItem{ Name = ProductName.Chicken, Category = ProductCategory.Meat, Price = 10, Quantity = 2 },
+                                     new BillItem{ Name = ProductName.Cola, Category = ProductCategory.Drink, Price = 5, Quantity = 2 },
+                                     new BillItem{ Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2 },
+                                     new BillItem{ Name = ProductName.Light, Category = ProductCategory.Electronics, Price = 100, Quantity = 1 },
                                  };
             var actual = TotalPriceCalaculator
                          .CreateBill(myShoppingList)
@@ -256,11 +256,11 @@ namespace Sales.Test
         {
             var myShoppingList = new List<BillItem>
                                  {
-                                     new BillItem{ Name = "wine", Category = ProductCategory.Drink, Price = 15, Quantity = 3 },
-                                     new BillItem{ Name = "chicken", Category = ProductCategory.Meat, Price = 10, Quantity = 2 },
-                                     new BillItem{ Name = "cola", Category = ProductCategory.Drink, Price = 5, Quantity = 2 },
-                                     new BillItem{ Name = "pork", Category = ProductCategory.Meat, Price = 25, Quantity = 2 },
-                                     new BillItem{ Name = "light", Category = ProductCategory.Electronics, Price = 100, Quantity = 100 },
+                                     new BillItem{ Name = ProductName.Wine, Category = ProductCategory.Drink, Price = 15, Quantity = 3 },
+                                     new BillItem{ Name = ProductName.Chicken, Category = ProductCategory.Meat, Price = 10, Quantity = 2 },
+                                     new BillItem{ Name = ProductName.Cola, Category = ProductCategory.Drink, Price = 5, Quantity = 2 },
+                                     new BillItem{ Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2 },
+                                     new BillItem{ Name = ProductName.Light, Category = ProductCategory.Electronics, Price = 100, Quantity = 100 },
                                  };
             var actual = TotalPriceCalaculator
                          .CreateBill(myShoppingList)
