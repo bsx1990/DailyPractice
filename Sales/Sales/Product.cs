@@ -12,7 +12,7 @@ namespace Sales
         {
             try
             {
-                Name = Enum.Parse<ProductName>(name);
+                Name = Enum.Parse<ProductName>(name, true);
             }
             catch (Exception)
             {

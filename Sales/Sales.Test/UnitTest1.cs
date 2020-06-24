@@ -2,116 +2,120 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Sales.SaleStrategies;
 
 namespace Sales.Test
 {
     public class Tests
     {
-        private readonly Func<Bill, Bill> _wineAndChickenAsAPackageStrategy =
-            bill =>
+        private readonly IProductSaleStrategy _wineAndChickenAsAPackageStrategy =
+            new ProductSaleStrategy(new List<ProductName> {ProductName.Wine, ProductName.Chicken})
             {
-                var shoppingList = bill.ShoppingList;
-                static bool IsWine(BillItem item) => item.Name == ProductName.Wine;
-                static bool IsChicken(BillItem item) => item.Name == ProductName.Chicken;
-                if (!shoppingList.Any(IsWine) || !shoppingList.Any(IsChicken))
+                Calculate = bill =>
                 {
-                    return bill;
-                }
+                    var shoppingList = bill.ShoppingList;
+                    static bool IsWine(BillItem item) => item.Name == ProductName.Wine;
+                    static bool IsChicken(BillItem item) => item.Name == ProductName.Chicken;
+                    if (!shoppingList.Any(IsWine) || !shoppingList.Any(IsChicken)) { return bill; }
 
-                var combinedList = shoppingList
-                                   .Where(item =>
-                                              !IsWine(item) && !IsChicken(item))
-                                   .ToList();
-                var wineCount = shoppingList.First(IsWine).Quantity;
-                var chickenCount = shoppingList.First(IsChicken).Quantity;
-                var minCount = Math.Min(wineCount, chickenCount);
-                combinedList.Add(new BillItem
-                                 {
-                                     Name = ProductName.WineAndChicken,
-                                     Category = ProductCategory.WineAndChicken,
-                                     Price = 23,
-                                     Quantity = minCount
-                                 });
-                if (wineCount > minCount)
-                {
-                    var wine = shoppingList.First(IsWine);
-                    wine.Quantity = wineCount - minCount;
-                    combinedList.Add(wine);
-                }
+                    var combinedList = shoppingList
+                        .Where(item => !IsWine(item) && !IsChicken(item))
+                        .ToList();
+                    var wineCount = shoppingList.First(IsWine).Quantity;
+                    var chickenCount = shoppingList.First(IsChicken).Quantity;
+                    var minCount = Math.Min(wineCount, chickenCount);
+                    combinedList.Add(new BillItem
+                    {
+                        Name = ProductName.WineAndChicken,
+                        Category = ProductCategory.WineAndChicken,
+                        Price = 23,
+                        Quantity = minCount
+                    });
+                    if (wineCount > minCount)
+                    {
+                        var wine = shoppingList.First(IsWine);
+                        wine.Quantity = wineCount - minCount;
+                        combinedList.Add(wine);
+                    }
 
-                if (chickenCount > minCount)
-                {
+                    if (chickenCount <= minCount) { return new Bill(combinedList); }
+                    
                     var chicken = shoppingList.First(IsChicken);
                     chicken.Quantity = chickenCount - minCount;
                     combinedList.Add(chicken);
+                    return new Bill(combinedList);
                 }
-
-                return new Bill(combinedList);
             };
 
-        private readonly Func<Bill, Bill> _secondHalfPriceForWineAndChickenPackageStrategy =
-            bill =>
+        private readonly IProductSaleStrategy _secondHalfPriceForWineAndChickenPackageStrategy =
+            new ProductSaleStrategy(new List<ProductName> {ProductName.WineAndChicken})
             {
-                var shoppingList = bill.ShoppingList;
-                static bool IsWineAndChickenPackage(BillItem item) => item.Name == ProductName.WineAndChicken;
-                var packageCount = shoppingList.First(IsWineAndChickenPackage).Quantity;
-                if (packageCount < 2)
+                Calculate = bill =>
                 {
-                    return bill;
-                }
+                    var shoppingList = bill.ShoppingList;
+                    static bool IsWineAndChickenPackage(BillItem item) => item.Name == ProductName.WineAndChicken;
+                    var packageCount = shoppingList.First(IsWineAndChickenPackage).Quantity;
+                    if (packageCount < 2) { return bill; }
 
-                var combinedList = shoppingList
-                                   .Where(item => !IsWineAndChickenPackage(item))
-                                   .ToList();
-                combinedList.Add(new BillItem
-                                 {
-                                     Name = ProductName.SecondHalfPriceForWineAndChicken,
-                                     Category = ProductCategory.WineAndChicken,
-                                     Price = 23 * 1.5,
-                                     Quantity = packageCount / 2
-                                 });
-                var leftPackage = packageCount % 2;
-                if (leftPackage > 0)
-                {
+                    var combinedList = shoppingList
+                        .Where(item => !IsWineAndChickenPackage(item))
+                        .ToList();
+                    combinedList.Add(new BillItem
+                    {
+                        Name = ProductName.SecondHalfPriceForWineAndChicken,
+                        Category = ProductCategory.WineAndChicken,
+                        Price = 23 * 1.5,
+                        Quantity = packageCount / 2
+                    });
+                    var leftPackage = packageCount % 2;
+                    if (leftPackage <= 0)
+                    {
+                        return new Bill(combinedList);
+                    }
+
                     var package = shoppingList.First(IsWineAndChickenPackage);
                     package.Quantity = leftPackage;
                     combinedList.Add(package);
+                    return new Bill(combinedList);
                 }
-
-                return new Bill(combinedList);
             };
 
-        private readonly Func<Bill, Bill> _drinkDiscountStrategy = 
-            bill =>
+        private readonly ICategorySaleStrategy _drinkDiscountStrategy =
+            new CategorySaleStrategy(ProductCategory.Drink)
             {
-                var drinkTotalAmount = bill.ShoppingList
-                                           .Where(item => item.Category == ProductCategory.Drink)
-                                           .Sum(item => item.Price * item.Quantity);
-                var drinkDiscount = drinkTotalAmount * (1 - 0.8);
-                return new Bill(bill.ShoppingList, bill.TotalAmount - drinkDiscount);
+                Calculate = bill =>
+                {
+                    var drinkTotalAmount = bill.ShoppingList
+                        .Where(item => item.Category == ProductCategory.Drink)
+                        .Sum(item => item.Price * item.Quantity);
+                    var drinkDiscount = drinkTotalAmount * (1 - 0.8);
+                    return new Bill(bill.ShoppingList, bill.TotalAmount - drinkDiscount);
+                }
             };
 
-        private readonly Func<Bill, Bill> _meatReductionStrategy = 
-            bill =>
+        private readonly ICategorySaleStrategy _meatReductionStrategy =
+            new CategorySaleStrategy(ProductCategory.Drink)
             {
-                var meatTotalAmount = bill.ShoppingList
-                                          .Where(item =>
-                                                     item.Category == ProductCategory.Meat &&
-                                                     item.Name != ProductName.Pork)
-                                          .Sum(item => item.Price * item.Quantity);
-                var meatDiscount = meatTotalAmount >= 60
-                    ? 8
-                    : meatTotalAmount >= 20
-                        ? 2
-                        : 0;
-                return new Bill(bill.ShoppingList, bill.TotalAmount - meatDiscount);
+                Calculate = bill =>
+                {
+                    var meatTotalAmount = bill.ShoppingList
+                        .Where(item => item.Category == ProductCategory.Meat && item.Name != ProductName.Pork)
+                        .Sum(item => item.Price * item.Quantity);
+                    var meatDiscount = meatTotalAmount >= 60
+                        ? 8
+                        : meatTotalAmount >= 20 ? 2 : 0;
+                    return new Bill(bill.ShoppingList, bill.TotalAmount - meatDiscount); 
+                }
             };
 
-        private readonly Func<Bill, Bill> _minus50Over200Strategy = 
-            bill =>
+        private readonly IBillSaleStrategy _minus50Over200Strategy =
+            new BillSaleStrategy
             {
-                var discount = Math.Floor(bill.TotalAmount / 200) * 50;
-                return new Bill(bill.ShoppingList, bill.TotalAmount - discount);
+                Calculate = bill =>
+                {
+                    var discount = Math.Floor(bill.TotalAmount / 200) * 50;
+                    return new Bill(bill.ShoppingList, bill.TotalAmount - discount);
+                }
             };
 
 
@@ -151,15 +155,15 @@ namespace Sales.Test
         {
             var myShoppingList = new List<Product>
                                  {
-                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
-                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
-                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
-                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
-                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
-                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
-                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
-                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
-                                     new Product(ProductName.Light, ProductCategory.Electronics, 100),
+                                     new Product("wine", ProductCategory.Drink, 15),
+                                     new Product("chicken", ProductCategory.Meat, 10),
+                                     new Product("chicken", ProductCategory.Meat, 10),
+                                     new Product("chicken", ProductCategory.Meat, 10),
+                                     new Product("cola", ProductCategory.Drink, 5),
+                                     new Product("cola", ProductCategory.Drink, 5),
+                                     new Product("pork", ProductCategory.Meat, 25),
+                                     new Product("pork", ProductCategory.Meat, 25),
+                                     new Product("light", ProductCategory.Electronics, 100),
                                  };
             var actual = TotalPriceCalaculator
                          .CreateBill(myShoppingList)

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Sales.SaleStrategies
 {
     public interface ISaleStrategy
     {
         public StrategyAppliedType StrategyAppliedType { get; }
-        public Bill Calculate(Bill bill);
+        public Func<Bill,Bill> Calculate { get; set; }
     }
 
     public interface IProductSaleStrategy : ISaleStrategy
