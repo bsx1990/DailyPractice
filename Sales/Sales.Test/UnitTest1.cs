@@ -1,123 +1,90 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
+using Sales.ProductsSelector;
 using Sales.SaleStrategies;
+using Sales.StrategyCalculators;
 
 namespace Sales.Test
 {
     public class Tests
     {
-        private readonly IProductSaleStrategy _wineAndChickenAsAPackageStrategy =
-            new ProductSaleStrategy(new List<ProductName> {ProductName.Wine, ProductName.Chicken})
+        private readonly ISaleStrategy _wineAndChickenAsAPackageStrategy =
+            new SaleStrategy
             {
-                Calculate = bill =>
+                ProductsSelector = new SpecifiedProductsSelector
                 {
-                    var shoppingList = bill.ShoppingList;
-                    static bool IsWine(BillItem item) => item.Name == ProductName.Wine;
-                    static bool IsChicken(BillItem item) => item.Name == ProductName.Chicken;
-                    if (!shoppingList.Any(IsWine) || !shoppingList.Any(IsChicken)) { return bill; }
-
-                    var combinedList = shoppingList
-                        .Where(item => !IsWine(item) && !IsChicken(item))
-                        .ToList();
-                    var wineCount = shoppingList.First(IsWine).Quantity;
-                    var chickenCount = shoppingList.First(IsChicken).Quantity;
-                    var minCount = Math.Min(wineCount, chickenCount);
-                    combinedList.Add(new BillItem
+                    ProductSelectRules = new List<ProductSelectRule>
                     {
-                        Name = ProductName.WineAndChicken,
-                        Category = ProductCategory.WineAndChicken,
-                        Price = 23,
-                        Quantity = minCount
-                    });
-                    if (wineCount > minCount)
-                    {
-                        var wine = shoppingList.First(IsWine);
-                        wine.Quantity = wineCount - minCount;
-                        combinedList.Add(wine);
+                        new ProductSelectRule { Name = ProductName.Wine, Qty = 1 },
+                        new ProductSelectRule { Name = ProductName.Chicken, Qty = 1 },
                     }
-
-                    if (chickenCount <= minCount) { return new Bill(combinedList); }
-                    
-                    var chicken = shoppingList.First(IsChicken);
-                    chicken.Quantity = chickenCount - minCount;
-                    combinedList.Add(chicken);
-                    return new Bill(combinedList);
+                },
+                Calculator = new PackageBenefitCalculator
+                {
+                    NewProductName = ProductName.WineAndChicken,
+                    NewProductPrice = 23,
+                    NewProductCategory = ProductCategory.WineAndChicken
                 }
             };
 
-        private readonly IProductSaleStrategy _secondHalfPriceForWineAndChickenPackageStrategy =
-            new ProductSaleStrategy(new List<ProductName> {ProductName.WineAndChicken})
+        private readonly ISaleStrategy _secondHalfPriceForWineAndChickenPackageStrategy =
+            new SaleStrategy
             {
-                Calculate = bill =>
+                ProductsSelector = new SpecifiedProductsSelector
                 {
-                    var shoppingList = bill.ShoppingList;
-                    static bool IsWineAndChickenPackage(BillItem item) => item.Name == ProductName.WineAndChicken;
-                    var packageCount = shoppingList.First(IsWineAndChickenPackage).Quantity;
-                    if (packageCount < 2) { return bill; }
-
-                    var combinedList = shoppingList
-                        .Where(item => !IsWineAndChickenPackage(item))
-                        .ToList();
-                    combinedList.Add(new BillItem
+                    ProductSelectRules = new List<ProductSelectRule>
                     {
-                        Name = ProductName.SecondHalfPriceForWineAndChicken,
-                        Category = ProductCategory.WineAndChicken,
-                        Price = 23 * 1.5,
-                        Quantity = packageCount / 2
-                    });
-                    var leftPackage = packageCount % 2;
-                    if (leftPackage <= 0)
-                    {
-                        return new Bill(combinedList);
+                        new ProductSelectRule{ Name = ProductName.WineAndChicken, Qty = 2 }
                     }
-
-                    var package = shoppingList.First(IsWineAndChickenPackage);
-                    package.Quantity = leftPackage;
-                    combinedList.Add(package);
-                    return new Bill(combinedList);
-                }
-            };
-
-        private readonly ICategorySaleStrategy _drinkDiscountStrategy =
-            new CategorySaleStrategy(ProductCategory.Drink)
-            {
-                Calculate = bill =>
+                },
+                Calculator = new PackageBenefitCalculator
                 {
-                    var drinkTotalAmount = bill.ShoppingList
-                        .Where(item => item.Category == ProductCategory.Drink)
-                        .Sum(item => item.Price * item.Quantity);
-                    var drinkDiscount = drinkTotalAmount * (1 - 0.8);
-                    return new Bill(bill.ShoppingList, bill.TotalAmount - drinkDiscount);
+                    NewProductName = ProductName.SecondHalfPriceForWineAndChicken,
+                    NewProductPrice = 34.5,
+                    NewProductCategory = ProductCategory.WineAndChicken
                 }
             };
 
-        private readonly ICategorySaleStrategy _meatReductionStrategy =
-            new CategorySaleStrategy(ProductCategory.Drink)
+        private readonly ISaleStrategy _drinkDiscountStrategy =
+            new SaleStrategy
             {
-                Calculate = bill =>
+                ProductsSelector = new CategorySelector
                 {
-                    var meatTotalAmount = bill.ShoppingList
-                        .Where(item => item.Category == ProductCategory.Meat && item.Name != ProductName.Pork)
-                        .Sum(item => item.Price * item.Quantity);
-                    var meatDiscount = meatTotalAmount >= 60
-                        ? 8
-                        : meatTotalAmount >= 20 ? 2 : 0;
-                    return new Bill(bill.ShoppingList, bill.TotalAmount - meatDiscount); 
+                    AppliedCategory = ProductCategory.Drink
+                },
+                Calculator = new DiscountCalculator
+                {
+                    Discount = 0.8
                 }
             };
 
-        private readonly IBillSaleStrategy _minus50Over200Strategy =
-            new BillSaleStrategy
+        private readonly ISaleStrategy _meatExpectPorkReductionStrategy =
+            new SaleStrategy
             {
-                Calculate = bill =>
+                ProductsSelector = new CategorySelector
                 {
-                    var discount = Math.Floor(bill.TotalAmount / 200) * 50;
-                    return new Bill(bill.ShoppingList, bill.TotalAmount - discount);
+                    AppliedCategory = ProductCategory.Meat,
+                    ExpectProducts = new List<ProductSelectRule>{ new ProductSelectRule{ Name = ProductName.Pork } }
+                },
+                Calculator = new StepwiseReductionCalculator
+                {
+                    ReductionRules = new List<ReductionRule>
+                    {
+                        new ReductionRule{ Floor = 20, Reduction = 2 },
+                        new ReductionRule{ Floor = 60, Reduction = 8 },
+                    }
                 }
             };
 
+        private readonly ISaleStrategy _minus50Over200Strategy =
+            new SaleStrategy
+            {
+                ProductsSelector = new BillSelector(),
+                Calculator = new EveryReductionCalculator
+                {
+                    ReductionRule = new ReductionRule {Floor = 200, Reduction = 50}
+                }
+            };
 
         [SetUp]
         public void Setup()
@@ -125,7 +92,143 @@ namespace Sales.Test
         }
 
         [Test]
-        public void PriceShouleBe204D5WhenGivenTwoWineChicken()
+        [Category("Refactor Test")]
+        public void PriceShouldBe225WhenNoStrategies()
+        {
+            var myShoppingList = new List<BillItem>
+            {
+                new BillItem {Name = ProductName.Wine, Category = ProductCategory.Drink, Price = 15, Quantity = 3},
+                new BillItem {Name = ProductName.Chicken, Category = ProductCategory.Meat, Price = 10, Quantity = 2},
+                new BillItem {Name = ProductName.Cola, Category = ProductCategory.Drink, Price = 5, Quantity = 2},
+                new BillItem {Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2},
+                new BillItem {Name = ProductName.Light, Category = ProductCategory.Electronics, Price = 100, Quantity = 1},
+            };
+            var actual = TotalPriceCalculator
+                .CreateBill(myShoppingList)
+                .TotalAmount;
+            Assert.AreEqual(225, actual);
+        }
+        
+        [Test]
+        [Category("Refactor Test")]
+        public void PriceShouldBe221WhenAddWineAndChickenAsAPackageStrategy()
+        {
+            var myShoppingList = new List<BillItem>
+            {
+                new BillItem {Name = ProductName.Wine, Category = ProductCategory.Drink, Price = 15, Quantity = 3},
+                new BillItem {Name = ProductName.Chicken, Category = ProductCategory.Meat, Price = 10, Quantity = 2},
+                new BillItem {Name = ProductName.Cola, Category = ProductCategory.Drink, Price = 5, Quantity = 2},
+                new BillItem {Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2},
+                new BillItem {Name = ProductName.Light, Category = ProductCategory.Electronics, Price = 100, Quantity = 1},
+            };
+            var actual = TotalPriceCalculator
+                .CreateBill(myShoppingList)
+                .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
+                .TotalAmount;
+            Assert.AreEqual(221, actual);
+        }
+        
+        [Test]
+        [Category("Refactor Test")]
+        public void PriceShouldBe209D5WhenAddHalfPriceWithWineAndChickenPackageStrategy()
+        {
+            var myShoppingList = new List<BillItem>
+            {
+                new BillItem {Name = ProductName.Wine, Category = ProductCategory.Drink, Price = 15, Quantity = 3},
+                new BillItem {Name = ProductName.Chicken, Category = ProductCategory.Meat, Price = 10, Quantity = 2},
+                new BillItem {Name = ProductName.Cola, Category = ProductCategory.Drink, Price = 5, Quantity = 2},
+                new BillItem {Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2},
+                new BillItem {Name = ProductName.Light, Category = ProductCategory.Electronics, Price = 100, Quantity = 1},
+            };
+            var actual = TotalPriceCalculator
+                .CreateBill(myShoppingList)
+                .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
+                .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
+                .TotalAmount;
+            Assert.AreEqual(209.5, actual);
+        }
+        
+        [Test]
+        [Category("Refactor Test")]
+        public void PriceShouldBe204D5WhenAddDrinkDiscountStrategy()
+        {
+            var myShoppingList = new List<BillItem>
+            {
+                new BillItem {Name = ProductName.Wine, Category = ProductCategory.Drink, Price = 15, Quantity = 3},
+                new BillItem {Name = ProductName.Chicken, Category = ProductCategory.Meat, Price = 10, Quantity = 2},
+                new BillItem {Name = ProductName.Cola, Category = ProductCategory.Drink, Price = 5, Quantity = 2},
+                new BillItem {Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2},
+                new BillItem {Name = ProductName.Light, Category = ProductCategory.Electronics, Price = 100, Quantity = 1},
+            };
+            var actual = TotalPriceCalculator
+                .CreateBill(myShoppingList)
+                .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
+                .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
+                .UseSaleStrategy(_drinkDiscountStrategy)
+                .TotalAmount;
+            Assert.AreEqual(204.5, actual);
+        }
+        
+        [Test]
+        [Category("Refactor Test")]
+        public void PriceShouldBe66WhenAddMeatDiscountStrategy()
+        {
+            var myShoppingList = new List<BillItem>
+            {
+                new BillItem {Name = ProductName.Chicken, Category = ProductCategory.Meat, Price = 10, Quantity = 2},
+                new BillItem {Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2},
+            };
+            var actual = TotalPriceCalculator
+                .CreateBill(myShoppingList)
+                .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
+                .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
+                .UseSaleStrategy(_drinkDiscountStrategy)
+                .UseSaleStrategy(_meatExpectPorkReductionStrategy)
+                .TotalAmount;
+            Assert.AreEqual(68, actual);
+        }
+        
+        [Test]
+        [Category("Refactor Test")]
+        public void PriceShouldBe102WhenAddMeatDiscountStrategy()
+        {
+            var myShoppingList = new List<BillItem>
+            {
+                new BillItem {Name = ProductName.Chicken, Category = ProductCategory.Meat, Price = 10, Quantity = 6},
+                new BillItem {Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2},
+            };
+            var actual = TotalPriceCalculator
+                .CreateBill(myShoppingList)
+                .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
+                .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
+                .UseSaleStrategy(_drinkDiscountStrategy)
+                .UseSaleStrategy(_meatExpectPorkReductionStrategy)
+                .TotalAmount;
+            Assert.AreEqual(102, actual);
+        }
+        
+        [Test]
+        [Category("Refactor Test")]
+        public void PriceShouldBe150WhenAddMinus50Over200()
+        {
+            var myShoppingList = new List<BillItem>
+            {
+                new BillItem {Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 8},
+            };
+            var actual = TotalPriceCalculator
+                .CreateBill(myShoppingList)
+                .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
+                .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
+                .UseSaleStrategy(_drinkDiscountStrategy)
+                .UseSaleStrategy(_meatExpectPorkReductionStrategy)
+                .UseSaleStrategy(_minus50Over200Strategy)
+                .TotalAmount;
+            Assert.AreEqual(150, actual);
+        }
+
+        [Test]
+        [Category("AC")]
+        public void PriceShouldBe204D5WhenGivenTwoWineChicken()
         {
             var myShoppingList = new List<Product>
                                  {
@@ -140,43 +243,45 @@ namespace Sales.Test
                                      new Product(ProductName.Pork, ProductCategory.Meat, 25),
                                      new Product(ProductName.Light, ProductCategory.Electronics, 100),
                                  };
-            var actual = TotalPriceCalaculator
+            var actual = TotalPriceCalculator
                          .CreateBill(myShoppingList)
                          .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
                          .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
                          .UseSaleStrategy(_drinkDiscountStrategy)
-                         .UseSaleStrategy(_meatReductionStrategy)
+                         .UseSaleStrategy(_meatExpectPorkReductionStrategy)
                          .TotalAmount;
             Assert.AreEqual(204.5, actual);
         }
         
         [Test]
+        [Category("AC")]
         public void PriceShouleBe199_WhenGivenOneWineAndChickenPackage()
         {
             var myShoppingList = new List<Product>
                                  {
-                                     new Product("wine", ProductCategory.Drink, 15),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("chicken", ProductCategory.Meat, 10),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("cola", ProductCategory.Drink, 5),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("pork", ProductCategory.Meat, 25),
-                                     new Product("light", ProductCategory.Electronics, 100),
+                                     new Product(ProductName.Wine, ProductCategory.Drink, 15),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Chicken, ProductCategory.Meat, 10),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Cola, ProductCategory.Drink, 5),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Pork, ProductCategory.Meat, 25),
+                                     new Product(ProductName.Light, ProductCategory.Electronics, 100),
                                  };
-            var actual = TotalPriceCalaculator
+            var actual = TotalPriceCalculator
                          .CreateBill(myShoppingList)
                          .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
                          .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
                          .UseSaleStrategy(_drinkDiscountStrategy)
-                         .UseSaleStrategy(_meatReductionStrategy)
+                         .UseSaleStrategy(_meatExpectPorkReductionStrategy)
                          .TotalAmount;
             Assert.AreEqual(199, actual);
         }
         
         [Test]
-        public void PriceShouleBe239_WhenGivenFourWineAndChickenPackage()
+        [Category("AC")]
+        public void PriceShouldBe239_WhenGivenFourWineAndChickenPackage()
         {
             var myShoppingList = new List<Product>
                                  {
@@ -195,17 +300,18 @@ namespace Sales.Test
                                      new Product(ProductName.Pork, ProductCategory.Meat, 25),
                                      new Product(ProductName.Light, ProductCategory.Electronics, 100),
                                  };
-            var actual = TotalPriceCalaculator
+            var actual = TotalPriceCalculator
                          .CreateBill(myShoppingList)
                          .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
                          .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
                          .UseSaleStrategy(_drinkDiscountStrategy)
-                         .UseSaleStrategy(_meatReductionStrategy)
+                         .UseSaleStrategy(_meatExpectPorkReductionStrategy)
                          .TotalAmount;
             Assert.AreEqual(239, actual);
         }
         
         [Test]
+        [Category("AC")]
         public void PriceShouleBe227D5_WhenGivenThreeWineAndChickenPackage()
         {
             var myShoppingList = new List<Product>
@@ -223,17 +329,18 @@ namespace Sales.Test
                                      new Product(ProductName.Pork, ProductCategory.Meat, 25),
                                      new Product(ProductName.Light, ProductCategory.Electronics, 100),
                                  };
-            var actual = TotalPriceCalaculator
+            var actual = TotalPriceCalculator
                          .CreateBill(myShoppingList)
                          .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
                          .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
                          .UseSaleStrategy(_drinkDiscountStrategy)
-                         .UseSaleStrategy(_meatReductionStrategy)
+                         .UseSaleStrategy(_meatExpectPorkReductionStrategy)
                          .TotalAmount;
             Assert.AreEqual(227.5, actual);
         }
         
         [Test]
+        [Category("AC")]
         public void PriceShouleBe154D5_WhenMinus50Over200()
         {
             var myShoppingList = new List<BillItem>
@@ -244,18 +351,19 @@ namespace Sales.Test
                                      new BillItem{ Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2 },
                                      new BillItem{ Name = ProductName.Light, Category = ProductCategory.Electronics, Price = 100, Quantity = 1 },
                                  };
-            var actual = TotalPriceCalaculator
+            var actual = TotalPriceCalculator
                          .CreateBill(myShoppingList)
                          .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
                          .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
                          .UseSaleStrategy(_drinkDiscountStrategy)
-                         .UseSaleStrategy(_meatReductionStrategy)
+                         .UseSaleStrategy(_meatExpectPorkReductionStrategy)
                          .UseSaleStrategy(_minus50Over200Strategy)
                          .TotalAmount;
             Assert.AreEqual(154.5, actual);
         }
         
         [Test]
+        [Category("AC")]
         public void PriceShouleBe7604D5_WhenMinus50Over200()
         {
             var myShoppingList = new List<BillItem>
@@ -266,12 +374,12 @@ namespace Sales.Test
                                      new BillItem{ Name = ProductName.Pork, Category = ProductCategory.Meat, Price = 25, Quantity = 2 },
                                      new BillItem{ Name = ProductName.Light, Category = ProductCategory.Electronics, Price = 100, Quantity = 100 },
                                  };
-            var actual = TotalPriceCalaculator
+            var actual = TotalPriceCalculator
                          .CreateBill(myShoppingList)
                          .UseSaleStrategy(_wineAndChickenAsAPackageStrategy)
                          .UseSaleStrategy(_secondHalfPriceForWineAndChickenPackageStrategy)
                          .UseSaleStrategy(_drinkDiscountStrategy)
-                         .UseSaleStrategy(_meatReductionStrategy)
+                         .UseSaleStrategy(_meatExpectPorkReductionStrategy)
                          .UseSaleStrategy(_minus50Over200Strategy)
                          .TotalAmount;
             Assert.AreEqual(7604.5, actual);

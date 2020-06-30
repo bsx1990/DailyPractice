@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
+using Sales.ProductsSelector;
+using Sales.StrategyCalculators;
 
 namespace Sales.SaleStrategies
 {
     public interface ISaleStrategy
     {
-        public StrategyAppliedType StrategyAppliedType { get; }
-        public Func<Bill,Bill> Calculate { get; set; }
+        public IProductsSelector ProductsSelector { get; set; }
+        public ICalculator Calculator { get; set; }
+        Bill Calculate(Bill bill);
     }
-
-    public interface IProductSaleStrategy : ISaleStrategy
+    
+    public class SaleStrategy : ISaleStrategy
     {
-        public List<ProductName> AppliedProductNames { get; }
-    }
+        public IProductsSelector ProductsSelector { get; set; }
+        public ICalculator Calculator { get; set; }
+        public Bill Calculate(Bill bill)
+        {
+            if (Calculator == null) { throw new Exception("No valid calculator"); }
 
-    public interface ICategorySaleStrategy : ISaleStrategy
-    {
-        public ProductCategory AppliedCategory { get; }
-    }
-
-    public interface IBillSaleStrategy : ISaleStrategy
-    {
-        
+            return Calculator.Calculate(ProductsSelector, bill);
+        }
     }
 }

@@ -1,13 +1,13 @@
 ﻿namespace Sales
 {
-    public enum ProductName
+    public static class ProductName
     {
-        Wine,
-        Chicken,
-        Cola,
-        Pork,
-        Light,
-        WineAndChicken,
-        SecondHalfPriceForWineAndChicken
+        public const string Wine = "Wine";
+        public const string Chicken = "Chicken";
+        public const string Cola = "Cola";
+        public const string Pork = "Pork";
+        public const string Light = "Light";
+        public const string WineAndChicken = "WineAndChicken";
+        public const string SecondHalfPriceForWineAndChicken = "SecondHalfPriceForWineAndChicken";
     }
 }
